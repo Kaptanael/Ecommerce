@@ -1,4 +1,5 @@
 ﻿using Ecommerce.Model;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -6,11 +7,13 @@ using System.Text;
 
 namespace Ecommerce.Data.DataContext
 {
-    public class EcommerceDbContext : DbContext
+    public class EcommerceDbContext : IdentityDbContext
     {
         public EcommerceDbContext(DbContextOptions<EcommerceDbContext> options) : base(options) { }
 
-        public DbSet<User> Users { get; set; }
+        public DbSet<ApplicationUser> ApplicationUsers { get; set; }
+
+        public DbSet<AppUser> Users { get; set; }
         public DbSet<Product> Products { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -23,6 +26,9 @@ namespace Ecommerce.Data.DataContext
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            
+            //modelBuilder.ApplyConfiguration(new MenuConfiguration());
+            //modelBuilder.ApplyConfiguration(new CategoryConfiguration());
         }
     }
 }

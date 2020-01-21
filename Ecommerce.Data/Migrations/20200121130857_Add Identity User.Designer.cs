@@ -4,14 +4,16 @@ using Ecommerce.Data.DataContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Ecommerce.Data.Migrations
 {
     [DbContext(typeof(EcommerceDbContext))]
-    partial class EcommerceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200121130857_Add Identity User")]
+    partial class AddIdentityUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -286,8 +288,6 @@ namespace Ecommerce.Data.Migrations
             modelBuilder.Entity("Ecommerce.Model.ApplicationUser", b =>
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
-
-                    b.ToTable("User");
 
                     b.HasDiscriminator().HasValue("ApplicationUser");
                 });

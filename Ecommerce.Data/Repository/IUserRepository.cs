@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace Ecommerce.Data.Repository
 {
-    public interface IUserRepository : IRepository<User>
+    public interface IUserRepository : IRepository<AppUser>
     {
-        Task<User> Register(User user, string password);
+        Task<AppUser> Register(AppUser user, string password);
 
-        Task<User> Login(string username, string password);
+        Task<AppUser> Login(string username, string password);
 
         Task<bool> UserExists(string email);
     }

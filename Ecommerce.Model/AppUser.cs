@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Ecommerce.Model
 {
-    public class User
+    public class AppUser
     {
         [Key]
         public int Id { get; set; }

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Ecommerce.Data.Repository
 {
-    public class UserRepository : Repository<User>, IUserRepository
+    public class UserRepository : Repository<AppUser>, IUserRepository
     {
         public UserRepository(EcommerceDbContext context) : base(context)
         {
@@ -33,7 +33,7 @@ namespace Ecommerce.Data.Repository
             return users;
         }
 
-        public async Task<User> Login(string email, string password)
+        public async Task<AppUser> Login(string email, string password)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
 
@@ -68,7 +68,7 @@ namespace Ecommerce.Data.Repository
             return true;
         }
 
-        public async Task<User> Register(User user, string password)
+        public async Task<AppUser> Register(AppUser user, string password)
         {
             byte[] passwordHash, passwordSalt;
 

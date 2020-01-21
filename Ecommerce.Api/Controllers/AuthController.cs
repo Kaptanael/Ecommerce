@@ -55,7 +55,7 @@ namespace Ecommerce.Api.Controllers
                     return Conflict(HttpStatusCode.Conflict);
                 }
 
-                var userToCreate = new User
+                var userToCreate = new AppUser
                 {
                     FirstName = userForRegisterRequest.FirstName,
                     LastName = userForRegisterRequest.LastName,

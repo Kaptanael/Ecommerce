@@ -9,6 +9,7 @@ using Ecommerce.Api.Extensions;
 using Ecommerce.Data.DataContext;
 using Ecommerce.Data.Repository;
 using Ecommerce.Data.UnitOfWork;
+using Ecommerce.Model;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -17,6 +18,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -36,12 +38,15 @@ namespace Ecommerce.Api
         }
 
         public IConfiguration Configuration { get; }
-
-        // This method gets called by the runtime. Use this method to add services to the container.
+        
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<EcommerceDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));            
+
+            services.AddIdentity<ApplicationUser, ApplicationRole>()        
+                    .AddEntityFrameworkStores<EcommerceDbContext>()
+                    .AddDefaultTokenProviders();
 
             services.AddCors();
 
@@ -54,15 +59,19 @@ namespace Ecommerce.Api
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             }).AddJwtBearer(options =>
                 {
+                    options.RequireHttpsMetadata = false;
+                    options.SaveToken = true;
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateLifetime = false,
                         ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration.GetSection("AppSettings:Token").Value)),
+                        ValidateIssuer = true,                        
                         ValidIssuer = Configuration.GetSection("AppSettings:Issuer").Value,
+                        ValidateAudience = true,                        
                         ValidAudience = Configuration.GetSection("AppSettings:Audience").Value,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration.GetSection("AppSettings:Token").Value))
+                        RequireExpirationTime = true,
+                        ValidateLifetime = false,
+                        ClockSkew = TimeSpan.Zero
                     };
                     options.Events = new JwtBearerEvents
                     {
@@ -87,8 +96,7 @@ namespace Ecommerce.Api
                 options.Filters.Add(new AuthorizeFilter(policy));
             });
         }
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -116,6 +124,11 @@ namespace Ecommerce.Api
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors(x => x
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader());
 
             app.UseAuthentication();
 
