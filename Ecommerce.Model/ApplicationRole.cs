@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Ecommerce.Model
 {
-    public class ApplicationRole: IdentityRole
+    public class ApplicationRole: IdentityRole<long>
     {
     }
 }

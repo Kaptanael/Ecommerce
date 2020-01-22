@@ -5,9 +5,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace Ecommerce.Model
-{
-    [Table("User")]
-    public class ApplicationUser : IdentityUser
+{    
+    public class ApplicationUser : IdentityUser<long>
     {
     }
 }

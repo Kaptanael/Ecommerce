@@ -10,6 +10,7 @@ using Ecommerce.Data.DataContext;
 using Ecommerce.Data.Repository;
 using Ecommerce.Data.UnitOfWork;
 using Ecommerce.Model;
+using Ecommerce.Service;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -52,6 +53,7 @@ namespace Ecommerce.Api
 
             services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
             services.AddTransient(typeof(IUnitOfWork), typeof(UnitOfWork));
+            services.AddScoped(typeof(IAuthService), typeof(AuthService));
 
             services.AddAuthentication(options =>
             {

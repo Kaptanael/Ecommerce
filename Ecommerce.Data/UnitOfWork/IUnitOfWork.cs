@@ -9,7 +9,7 @@ namespace Ecommerce.Data.UnitOfWork
 {
     public interface IUnitOfWork : IDisposable
     {
-        IUserRepository Users { get; }        
+        IUserRepository AppUsers { get; }        
         int Save();
         Task<int> SaveAsync(CancellationToken cancellationToken = default(CancellationToken));
     }

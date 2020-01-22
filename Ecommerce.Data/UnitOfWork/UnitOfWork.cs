@@ -17,7 +17,7 @@ namespace Ecommerce.Data.UnitOfWork
         }
 
         private IUserRepository _users;
-        public IUserRepository Users
+        public IUserRepository AppUsers
         {
             get
             {

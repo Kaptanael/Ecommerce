@@ -12,6 +12,6 @@ namespace Ecommerce.Data.Repository
 
         Task<AppUser> Login(string username, string password);
 
-        Task<bool> UserExists(string email);
+        Task<AppUser> GetUserByEmail(string email);
     }
 }

@@ -23,7 +23,7 @@ namespace Ecommerce.Data.Repository
 
         public async Task<object> GetAllUserName()
         {
-            var users = await _context.Users
+            var users = await _context.AppUsers
                 .Select(u => new
                 {
                     u.Id,
@@ -35,7 +35,7 @@ namespace Ecommerce.Data.Repository
 
         public async Task<AppUser> Login(string email, string password)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            var user = await _context.AppUsers.FirstOrDefaultAsync(u => u.Email == email);
 
             if (user == null)
             {
@@ -77,7 +77,7 @@ namespace Ecommerce.Data.Repository
             user.PasswordHash = passwordHash;
             user.PasswordSalt = passwordSalt;
 
-            await _context.Users.AddAsync(user);
+            await _context.AppUsers.AddAsync(user);
             await _context.SaveChangesAsync();
 
             return user;
@@ -92,14 +92,10 @@ namespace Ecommerce.Data.Repository
             }
         }
 
-        public async Task<bool> UserExists(string email)
+        public async Task<AppUser> GetUserByEmail(string email)
         {
-            if (await _context.Users.AnyAsync(u => u.Email == email))
-            {
-                return true;
-            }
-
-            return false;
+            var user = await _context.AppUsers.FirstOrDefaultAsync(u => u.Email == email);
+            return user;
         }
     }
 }

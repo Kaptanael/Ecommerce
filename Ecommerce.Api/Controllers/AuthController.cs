@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Ecommerce.Data.UnitOfWork;
 using Ecommerce.Dto.User;
 using Ecommerce.Model;
+using Ecommerce.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -26,11 +27,12 @@ namespace Ecommerce.Api.Controllers
         private readonly IUnitOfWork _uow;
         private readonly IConfiguration _configuration;
         private readonly ILogger _logger;
+        private readonly IAuthService _authService;
         private readonly string _issuer;
         private readonly string _audience;
         private readonly string _secret;
 
-        public AuthController(IConfiguration configuration, IUnitOfWork uow, ILogger<AuthController> logger)
+        public AuthController(IConfiguration configuration, IUnitOfWork uow, ILogger<AuthController> logger, IAuthService authService)
         {
             _configuration = configuration;
             _issuer = _configuration.GetSection("AppSettings:Issuer").Value;
@@ -38,6 +40,7 @@ namespace Ecommerce.Api.Controllers
             _secret = _configuration.GetSection("AppSettings:Token").Value;
             _uow = uow;
             _logger = logger;
+            _authService = authService;
         }
 
         [HttpPost("register")]
@@ -50,19 +53,12 @@ namespace Ecommerce.Api.Controllers
 
             try
             {
-                if (await _uow.Users.UserExists(userForRegisterRequest.Email.ToLower()))
+                if (await _uow.AppUsers.GetUserByEmail(userForRegisterRequest.Email.ToLower()))
                 {
                     return Conflict(HttpStatusCode.Conflict);
-                }
+                }                
 
-                var userToCreate = new AppUser
-                {
-                    FirstName = userForRegisterRequest.FirstName,
-                    LastName = userForRegisterRequest.LastName,
-                    Email = userForRegisterRequest.Email
-                };
-
-                var createdUser = await _uow.Users.Register(userToCreate, userForRegisterRequest.Password);
+                var createdUser = await _authService.Register(userForRegisterRequest);
 
                 return StatusCode(201);
             }
@@ -84,7 +80,7 @@ namespace Ecommerce.Api.Controllers
 
             try
             {
-                var userFromRepo = await _uow.Users.Login(userForLoginRequest.Email.ToLower(), userForLoginRequest.Password);
+                var userFromRepo = await _uow.AppUsers.Login(userForLoginRequest.Email.ToLower(), userForLoginRequest.Password);
 
                 if (userFromRepo == null)
                 {

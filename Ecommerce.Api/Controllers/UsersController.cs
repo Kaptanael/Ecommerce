@@ -34,7 +34,7 @@ namespace Ecommerce.Api.Controllers
                 {
                     return BadRequest(ModelState);
                 }
-                if (await uow.Users.UserExists(email))
+                if (await uow.AppUsers.UserExists(email))
                 {
                     return Conflict(HttpStatusCode.Conflict);
                 }

@@ -7,13 +7,12 @@ using System.Text;
 
 namespace Ecommerce.Data.DataContext
 {
-    public class EcommerceDbContext : IdentityDbContext
+    public class EcommerceDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, long>
     {
         public EcommerceDbContext(DbContextOptions<EcommerceDbContext> options) : base(options) { }
 
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
-
-        public DbSet<AppUser> Users { get; set; }
+        public DbSet<AppUser> AppUsers { get; set; }
         public DbSet<Product> Products { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -26,7 +25,7 @@ namespace Ecommerce.Data.DataContext
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            
+
             //modelBuilder.ApplyConfiguration(new MenuConfiguration());
             //modelBuilder.ApplyConfiguration(new CategoryConfiguration());
         }
