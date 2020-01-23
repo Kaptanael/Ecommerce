@@ -5,12 +5,14 @@ using System.Net;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using Ecommerce.Api.Extensions;
 using Ecommerce.Data.DataContext;
 using Ecommerce.Data.Repository;
 using Ecommerce.Data.UnitOfWork;
 using Ecommerce.Model;
 using Ecommerce.Service;
+using Ecommerce.Service.Mapping;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -28,6 +30,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace Ecommerce.Api
 {
@@ -43,17 +47,25 @@ namespace Ecommerce.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<EcommerceDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));            
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddIdentity<ApplicationUser, ApplicationRole>()        
-                    .AddEntityFrameworkStores<EcommerceDbContext>()
-                    .AddDefaultTokenProviders();
+            //services.AddIdentity<ApplicationUser, ApplicationRole>()        
+            //        .AddEntityFrameworkStores<EcommerceDbContext>()
+            //        .AddDefaultTokenProviders();
 
             services.AddCors();
 
+            var mappingConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new MappingProfile());
+            });
+
+            IMapper mapper = mappingConfig.CreateMapper();
+            services.AddSingleton(mapper);
+
             services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
             services.AddTransient(typeof(IUnitOfWork), typeof(UnitOfWork));
-            services.AddScoped(typeof(IAuthService), typeof(AuthService));
+            services.AddTransient(typeof(IAuthService), typeof(AuthService));
 
             services.AddAuthentication(options =>
             {
@@ -86,9 +98,13 @@ namespace Ecommerce.Api
                             return Task.CompletedTask;
                         }
                     };
-                });
+                });            
 
-            services.AddControllers().AddNewtonsoftJson();
+            services.AddControllers()
+                    .AddNewtonsoftJson(options =>
+                    {
+                        options.SerializerSettings.ContractResolver = new DefaultContractResolver();
+                    });
 
             services.AddMvc(options =>
             {
@@ -127,10 +143,7 @@ namespace Ecommerce.Api
 
             app.UseRouting();
 
-            app.UseCors(x => x
-                .AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader());
+            app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
             app.UseAuthentication();
 

@@ -5,11 +5,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Ecommerce.Data.Repository
 {
-    public class UserRepository : Repository<AppUser>, IUserRepository
+    public class UserRepository : Repository<User>, IUserRepository
     {
         public UserRepository(EcommerceDbContext context) : base(context)
         {
@@ -23,7 +24,7 @@ namespace Ecommerce.Data.Repository
 
         public async Task<object> GetAllUserName()
         {
-            var users = await _context.AppUsers
+            var users = await _context.Users
                 .Select(u => new
                 {
                     u.Id,
@@ -33,69 +34,69 @@ namespace Ecommerce.Data.Repository
             return users;
         }
 
-        public async Task<AppUser> Login(string email, string password)
+        //public async Task<AppUser> Login(string email, string password, CancellationToken cancellationToken = default(CancellationToken))
+        //{
+        //    var user = await _context.AppUsers.FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
+
+        //    if (user == null)
+        //    {
+        //        return null;
+        //    }
+
+        //    if (!VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
+        //    {
+        //        return null;
+        //    }
+
+        //    return user;
+        //}
+
+        //public async Task<AppUser> Register(AppUser user, string password, CancellationToken cancellationToken = default(CancellationToken))
+        //{
+        //    byte[] passwordHash, passwordSalt;
+
+        //    CreatePasswordHash(password, out passwordHash, out passwordSalt);
+
+        //    user.PasswordHash = passwordHash;
+        //    user.PasswordSalt = passwordSalt;
+
+        //    await _context.AppUsers.AddAsync(user);            
+
+        //    return user;
+        //}        
+
+        public async Task<User> GetUserByEmail(string email, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var user = await _context.AppUsers.FirstOrDefaultAsync(u => u.Email == email);
-
-            if (user == null)
-            {
-                return null;
-            }
-
-            if (!VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
-            {
-                return null;
-            }
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower(), cancellationToken);
 
             return user;
         }
 
-        private bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
-        {
-            using (var hmac = new System.Security.Cryptography.HMACSHA512(passwordSalt))
-            {
-                var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+        //private bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
+        //{
+        //    using (var hmac = new System.Security.Cryptography.HMACSHA512(passwordSalt))
+        //    {
+        //        var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
 
-                for (int i = 0; i < computedHash.Length; i++)
-                {
-                    if (computedHash[i] != passwordHash[i])
-                    {
-                        return false;
-                    }
-                }
-            }
+        //        for (int i = 0; i < computedHash.Length; i++)
+        //        {
+        //            if (computedHash[i] != passwordHash[i])
+        //            {
+        //                return false;
+        //            }
+        //        }
+        //    }
 
-            return true;
-        }
+        //    return true;
+        //}
 
-        public async Task<AppUser> Register(AppUser user, string password)
-        {
-            byte[] passwordHash, passwordSalt;
-
-            CreatePasswordHash(password, out passwordHash, out passwordSalt);
-
-            user.PasswordHash = passwordHash;
-            user.PasswordSalt = passwordSalt;
-
-            await _context.AppUsers.AddAsync(user);
-            await _context.SaveChangesAsync();
-
-            return user;
-        }
-
-        private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
-        {
-            using (var hmac = new System.Security.Cryptography.HMACSHA512())
-            {
-                passwordSalt = hmac.Key;
-                passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-            }
-        }
-
-        public async Task<AppUser> GetUserByEmail(string email)
-        {
-            var user = await _context.AppUsers.FirstOrDefaultAsync(u => u.Email == email);
-            return user;
-        }
+        //private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+        //{
+        //    using (var hmac = new System.Security.Cryptography.HMACSHA512())
+        //    {
+        //        passwordSalt = hmac.Key;
+        //        passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+        //    }
+        //}
     }
 }

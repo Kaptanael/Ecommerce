@@ -21,7 +21,7 @@ using Microsoft.IdentityModel.Tokens;
 namespace Ecommerce.Api.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]    
+    [ApiController]
     public class AuthController : ControllerBase
     {
         private readonly IUnitOfWork _uow;
@@ -38,11 +38,11 @@ namespace Ecommerce.Api.Controllers
             _issuer = _configuration.GetSection("AppSettings:Issuer").Value;
             _audience = _configuration.GetSection("AppSettings:Audience").Value;
             _secret = _configuration.GetSection("AppSettings:Token").Value;
-            _uow = uow;
             _logger = logger;
             _authService = authService;
         }
 
+        [AllowAnonymous]
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] UserForRegisterRequest userForRegisterRequest)
         {
@@ -53,10 +53,12 @@ namespace Ecommerce.Api.Controllers
 
             try
             {
-                if (await _uow.AppUsers.GetUserByEmail(userForRegisterRequest.Email.ToLower()))
+                var user = _authService.GetUserByEmail(userForRegisterRequest.Email);
+
+                if (user.Result != null)
                 {
                     return Conflict(HttpStatusCode.Conflict);
-                }                
+                }
 
                 var createdUser = await _authService.Register(userForRegisterRequest);
 
@@ -69,8 +71,8 @@ namespace Ecommerce.Api.Controllers
             }
         }
 
-        [HttpPost("login")]
         [AllowAnonymous]
+        [HttpPost("login")]        
         public async Task<IActionResult> Login([FromBody]UserForLoginRequest userForLoginRequest)
         {
             if (!ModelState.IsValid)
@@ -80,37 +82,18 @@ namespace Ecommerce.Api.Controllers
 
             try
             {
-                var userFromRepo = await _uow.AppUsers.Login(userForLoginRequest.Email.ToLower(), userForLoginRequest.Password);
+                var user = await _authService.Login(userForLoginRequest);
 
-                if (userFromRepo == null)
+                if (user == null)
                 {
                     return Unauthorized();
                 }
 
-                var claims = new[]
-                {
-                    new Claim(ClaimTypes.NameIdentifier, userFromRepo.Id.ToString()),
-                    new Claim(ClaimTypes.Name,userFromRepo.FirstName + " " + userFromRepo.LastName),
-                };
-
-                var tokenHandler = new JwtSecurityTokenHandler();
-
-                var tokenDescriptor = new SecurityTokenDescriptor
-                {
-                    Subject = new ClaimsIdentity(claims),
-                    Expires = DateTime.Now.AddMinutes(5),
-                    Issuer = _issuer,
-                    Audience = _audience,
-                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secret)), SecurityAlgorithms.HmacSha512)
-                };
-
-                var token = tokenHandler.CreateToken(tokenDescriptor);
-
                 return Ok(new
                 {
-                    token = tokenHandler.WriteToken(token),
-                    id = userFromRepo.Id.ToString(),
-                    name = userFromRepo.FirstName + " " + userFromRepo.LastName
+                    token = _authService.GenerateToken(userForLoginRequest, _secret, _issuer, _audience).Result,
+                    id = user.Id.ToString(),
+                    name = user.FirstName + " " + user.LastName
                 });
             }
             catch (Exception ex)
@@ -126,10 +109,10 @@ namespace Ecommerce.Api.Controllers
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
-            }            
+            }
 
             try
-            {                
+            {
                 var tokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
@@ -141,15 +124,15 @@ namespace Ecommerce.Api.Controllers
                 };
 
                 var tokenHandler = new JwtSecurityTokenHandler();
-                
+
                 var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out SecurityToken validatedToken);
 
-                var jwtSecurityToken = validatedToken as JwtSecurityToken;                
+                var jwtSecurityToken = validatedToken as JwtSecurityToken;
 
-                if (jwtSecurityToken == null || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha512, StringComparison.InvariantCultureIgnoreCase)) 
-                {                    
+                if (jwtSecurityToken == null || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha512, StringComparison.InvariantCultureIgnoreCase))
+                {
                     throw new SecurityTokenException("Invalid token");
-                }                    
+                }
 
                 return Ok(validatedToken);
             }

@@ -2,16 +2,17 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Ecommerce.Data.Repository
 {
-    public interface IUserRepository : IRepository<AppUser>
+    public interface IUserRepository : IRepository<User>
     {
-        Task<AppUser> Register(AppUser user, string password);
+        //Task<AppUser> Register(AppUser user, string password, CancellationToken cancellationToken = default(CancellationToken));
 
-        Task<AppUser> Login(string username, string password);
+        //Task<AppUser> Login(string username, string password, CancellationToken cancellationToken = default(CancellationToken));
 
-        Task<AppUser> GetUserByEmail(string email);
+        Task<User> GetUserByEmail(string email, CancellationToken cancellationToken = default(CancellationToken));
     }
 }

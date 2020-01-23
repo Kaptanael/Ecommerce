@@ -7,12 +7,11 @@ using System.Text;
 
 namespace Ecommerce.Data.DataContext
 {
-    public class EcommerceDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, long>
+    public class EcommerceDbContext : DbContext //IdentityDbContext<ApplicationUser, ApplicationRole, long>
     {
         public EcommerceDbContext(DbContextOptions<EcommerceDbContext> options) : base(options) { }
-
-        public DbSet<ApplicationUser> ApplicationUsers { get; set; }
-        public DbSet<AppUser> AppUsers { get; set; }
+        
+        public DbSet<User> Users { get; set; }
         public DbSet<Product> Products { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

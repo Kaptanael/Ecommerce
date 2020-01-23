@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 namespace Ecommerce.Api.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]    
+    [ApiController]
     public class UsersController : ControllerBase
     {
         private readonly IUnitOfWork uow;
@@ -30,11 +30,8 @@ namespace Ecommerce.Api.Controllers
         {
             try
             {
-                if (string.IsNullOrEmpty(email))
-                {
-                    return BadRequest(ModelState);
-                }
-                if (await uow.AppUsers.UserExists(email))
+                var user = await uow.AppUsers.GetUserByEmail(email);
+                if (user != null)
                 {
                     return Conflict(HttpStatusCode.Conflict);
                 }
