@@ -53,9 +53,9 @@ namespace Ecommerce.Api.Controllers
 
             try
             {
-                var user = _authService.GetUserByEmail(userForRegisterRequest.Email);
+                var user = await _authService.GetUserByEmail(userForRegisterRequest.Email);
 
-                if (user.Result != null)
+                if (user != null)
                 {
                     return Conflict(HttpStatusCode.Conflict);
                 }
@@ -89,12 +89,11 @@ namespace Ecommerce.Api.Controllers
                     return Unauthorized();
                 }
 
-                return Ok(new
-                {
-                    token = _authService.GenerateToken(userForLoginRequest, _secret, _issuer, _audience).Result,
-                    id = user.Id.ToString(),
-                    name = user.FirstName + " " + user.LastName
-                });
+                var token = await _authService.GenerateToken(userForLoginRequest, _secret, _issuer, _audience);
+
+                var tokenResponse = new TokenResponse { Id = user.Id, FullName = user.FirstName + " " + user.LastName, Token = token.ToString() };
+
+                return Ok(tokenResponse);
             }
             catch (Exception ex)
             {
