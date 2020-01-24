@@ -61,7 +61,7 @@ namespace Ecommerce.Service
 
             return userToReturn;
         }
-        public async Task<SecurityToken> GenerateToken(UserForLoginRequest userForLoginRequest, string secret, string issuer, string audience, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<string> GenerateToken(UserForLoginRequest userForLoginRequest, string secret, string issuer, string audience, CancellationToken cancellationToken = default(CancellationToken))
         {
             var userFromRepo = await _uow.AppUsers.GetUserByEmail(userForLoginRequest.Email, cancellationToken);
 
@@ -82,9 +82,9 @@ namespace Ecommerce.Service
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret)), SecurityAlgorithms.HmacSha512)
             };
 
-            var token = tokenHandler.CreateToken(tokenDescriptor);
+            var token = tokenHandler.CreateToken(tokenDescriptor);            
 
-            return token;
+            return tokenHandler.WriteToken(token); ;
         }
 
         public async Task<UserForListResponse> GetUserByEmail(string email, CancellationToken cancellationToken = default(CancellationToken)) 

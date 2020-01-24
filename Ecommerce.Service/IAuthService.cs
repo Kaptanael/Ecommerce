@@ -15,7 +15,7 @@ namespace Ecommerce.Service
 
         Task<UserForListResponse> Login(UserForLoginRequest userForLoginRequest, CancellationToken cancellationToken = default(CancellationToken));
 
-        Task<SecurityToken> GenerateToken(UserForLoginRequest userForLoginRequest, string secret, string issuer, string audience, CancellationToken cancellationToken = default(CancellationToken));
+        Task<string> GenerateToken(UserForLoginRequest userForLoginRequest, string secret, string issuer, string audience, CancellationToken cancellationToken = default(CancellationToken));
 
         Task<UserForListResponse> GetUserByEmail(string email, CancellationToken cancellationToken = default(CancellationToken));
     }
