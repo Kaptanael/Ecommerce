@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -54,5 +56,47 @@ namespace Ecommerce.Data.Repository
             var entity = await dbSet.FindAsync(new object[] { id }, cancellationToken);
             return entity;
         }
+
+        public async Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>> filter = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, string includeProperties = null, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            IQueryable<T> query = dbSet.AsNoTracking();
+
+            if (filter != null) 
+            {
+                query = query.Where(filter);
+            }
+            if (includeProperties != null)
+            {
+                foreach (var includeProperty in includeProperties.Split(new char[] { ','}, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(includeProperty);
+                }                
+            }
+            if (orderBy != null)
+            {
+                return await orderBy(query).ToListAsync(cancellationToken);
+            }
+
+            return await query.ToListAsync(cancellationToken);
+        }        
+
+        public async Task<T> GetFirstOrDefaultAsync(Expression<Func<T, bool>> filter = null, string includeProperties = null, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            IQueryable<T> query = dbSet.AsNoTracking(); 
+
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+            if (includeProperties != null)
+            {
+                foreach (var includeProperty in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(includeProperty);
+                }
+            }            
+
+            return await query.FirstOrDefaultAsync(cancellationToken);
+        }        
     }
 }
