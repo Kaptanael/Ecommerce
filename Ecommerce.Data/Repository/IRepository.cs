@@ -6,18 +6,20 @@ using System.Threading.Tasks;
 
 namespace Ecommerce.Data.Repository
 {
-    public interface IRepository<TEntity> where TEntity : class
+    public interface IRepository<T> where T : class
     {
-        Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default(CancellationToken));
+        Task<T> AddAsync(T entity, CancellationToken cancellationToken = default(CancellationToken));
 
-        Task<IEnumerable<TEntity>> AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default(CancellationToken));
+        Task<IEnumerable<T>> AddRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken = default(CancellationToken));
 
-        TEntity Update(TEntity entity);
+        T Update(T entity);
 
-        TEntity Delete(TEntity entity);
+        void Delete(int id);
 
-        Task<TEntity> GetByIdAsync(int id, CancellationToken cancellationToken = default(CancellationToken));
+        void Delete(T entity);
 
-        Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default(CancellationToken));
+        Task<T> GetByIdAsync(int id, CancellationToken cancellationToken = default(CancellationToken));
+
+        Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken = default(CancellationToken));
     }
 }

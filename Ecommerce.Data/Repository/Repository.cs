@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Ecommerce.Data.Repository
 {
-    public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
+    public class Repository<T> : IRepository<T> where T : class
     {
         protected readonly EcommerceDbContext _context;
 
@@ -16,37 +16,40 @@ namespace Ecommerce.Data.Repository
         {
             _context = context;
         }
-        public async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<T> AddAsync(T entity, CancellationToken cancellationToken = default(CancellationToken))
         {
             await _context.AddAsync(entity, cancellationToken);
             return entity;
         }
-        public async Task<IEnumerable<TEntity>> AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<IEnumerable<T>> AddRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken = default(CancellationToken))
         {
             await _context.AddRangeAsync(entities, cancellationToken);
             return entities;
         }
-        public TEntity Update(TEntity entity)
+        public T Update(T entity)
         {
             _context.Update(entity);
             return entity;
         }
-
-        public TEntity Delete(TEntity entity)
+        public void Delete(int id)
         {
-            _context.Remove(entity);
-            return entity;
+            T entityToDelete =  _context.Set<T>().Find(id);
+            Delete(entityToDelete);            
+        }
+        public void Delete(T entity)
+        {
+            _context.Remove(entity);            
         }
 
-        public async Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-            var entities = await _context.Set<TEntity>().AsNoTracking().ToListAsync(cancellationToken);
+            var entities = await _context.Set<T>().AsNoTracking().ToListAsync(cancellationToken);
             return entities;
         }
 
-        public async Task<TEntity> GetByIdAsync(int id, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<T> GetByIdAsync(int id, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var entity = await _context.Set<TEntity>().FindAsync(new object[] { id }, cancellationToken);
+            var entity = await _context.Set<T>().FindAsync(new object[] { id }, cancellationToken);
             return entity;
         }
     }
