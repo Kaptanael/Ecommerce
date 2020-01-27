@@ -19,12 +19,12 @@ namespace Ecommerce.Data.Repository
 
         public EcommerceDbContext EcommerceDbContext
         {
-            get { return _context as EcommerceDbContext; }
+            get { return Context as EcommerceDbContext; }
         }
 
         public async Task<object> GetAllUserName()
         {
-            var users = await _context.Users
+            var users = await Context.Users
                 .Select(u => new
                 {
                     u.Id,
@@ -67,7 +67,7 @@ namespace Ecommerce.Data.Repository
 
         public async Task<User> GetUserByEmail(string email, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower(), cancellationToken);
+            var user = await Context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower(), cancellationToken);
 
             return user;
         }
