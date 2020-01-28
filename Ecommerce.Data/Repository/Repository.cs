@@ -12,10 +12,10 @@ namespace Ecommerce.Data.Repository
 {
     public class Repository<T> : IRepository<T> where T : class
     {
-        protected readonly EcommerceDbContext Context;
+        protected readonly DbContext Context;
         internal DbSet<T> dbSet;
 
-        public Repository(EcommerceDbContext context)
+        public Repository(DbContext context)
         {
             Context = context;
             dbSet = context.Set<T>();
