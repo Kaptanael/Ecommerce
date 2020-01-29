@@ -1,9 +1,77 @@
 /* You can add global styles to this file, and also import other style files */
 
-/* You can add global styles to this file, and also import other style files */
 @import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
-//@import '../node_modules/bootswatch/dist/united/bootstrap.min.css';
 @import "../node_modules/font-awesome/css/font-awesome.min.css";
 @import "assets/css/adminlte.min.css";
 @import "../node_modules/primeng/resources/primeng.min.css";
 @import "../node_modules/primeng/resources/themes/nova-light/theme.css";
+
+
+/* ====================== input,select,textarea,calendar validation ====================== */
+
+input:required.ng-valid,
+textarea:required.ng-valid,
+select:required.ng-valid,
+p-calendar.ng-valid input:required {
+  border-left: 5px solid green;
+}
+
+input:required.ng-invalid,
+textarea:required.ng-invalid,
+select:required.ng-invalid,
+p-calendar.ng-invalid input:required {
+  border-left: 5px solid red;
+}
+
+input:required.ng-pending,
+textarea:required.ng-pending,
+select:required.ng-pending,
+p-calendar.ng-pending input:required {
+  border-left: 5px solid orange;
+}
+
+input:required.ng-touched.ng-invalid,
+textarea:required.ng-touched.ng-invalid,
+select:required.ng-touched.ng-invalid,
+p-calendar.ng-touched.ng-invalid input:required {
+  border: 1px solid red;
+  border-left: 5px solid red;
+}
+
+p-chips.ng-dirty.ng-touched.ng-invalid > div {
+  border: 1px solid red;
+  border-left: 5px solid red;
+}
+
+input:required.ng-touched.ng-pending,
+textarea:required.ng-touched.ng-pending,
+select:required.ng-touched.ng-pending,
+p-calendar.ng-touched.ng-pending input:required {
+  border: 1px solid orange;
+  border-left: 5px solid orange;
+}
+
+input:not(:required).ng-invalid,
+textarea:not(:required).ng-invalid,
+p-calendar.ng-invalid input:not(:required) {
+  border: 1px solid red;
+}
+
+input:not(:required).ng-pending,
+textarea:not(:required).ng-pending,
+p-calendar.ng-pending input:not(:required) {
+  border: 1px solid orange;
+}
+
+.ui-tooltip .ui-tooltip-text {
+  background: #003663 !important;
+  white-space: normal;
+  padding: 10px;
+}
+
+.ui-tooltip {
+  position: absolute;
+  display: none;
+  max-width: 100%;
+  z-index: 10000 !important;
+}
