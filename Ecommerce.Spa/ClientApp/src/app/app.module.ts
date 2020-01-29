@@ -8,11 +8,13 @@ import { AppComponent } from "./app.component";
 
 import { HomeComponent } from "./admin/home/home.component";
 import { NotFoundComponent } from "./core/not-found/not-found.component";
+import { DashboardModule } from './admin/dashboard/dashboard.module';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
     declarations: [AppComponent, HomeComponent, NotFoundComponent],
-  imports: [BrowserModule, CommonModule, RouterModule, AppRoutingModule],
-  providers: [],
-  bootstrap: [AppComponent]
+    imports: [BrowserModule, HttpClientModule, CommonModule, RouterModule, AppRoutingModule, DashboardModule],
+    providers: [],
+    bootstrap: [AppComponent]
 })
-export class AppModule {}
+export class AppModule { }

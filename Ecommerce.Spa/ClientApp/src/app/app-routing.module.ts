@@ -2,7 +2,6 @@ import { NgModule } from "@angular/core";
 import { Routes, RouterModule } from "@angular/router";
 import { HomeComponent } from "./admin/home/home.component";
 import { NotFoundComponent } from "./core/not-found/not-found.component";
-import { LoginComponent } from './admin/login/login.component';
 
 const routes: Routes = [
     {
@@ -16,8 +15,7 @@ const routes: Routes = [
         ]
     },
     {
-        path: 'login',
-        //component: LoginComponent
+        path: 'login',        
         loadChildren:'./admin/login/login.module#LoginModule'        
     },
     {
