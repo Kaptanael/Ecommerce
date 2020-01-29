@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../core/services/auth.service';
+import { MessageService } from 'primeng/api';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
     selector: 'app-login',
@@ -11,7 +13,7 @@ import { AuthService } from '../core/services/auth.service';
 export class LoginComponent implements OnInit {
     loginFormGroup: FormGroup;
 
-    constructor(private fb: FormBuilder, private router: Router, public authService: AuthService) { }
+    constructor(private fb: FormBuilder, private router: Router, public authService: AuthService, private messageService: MessageService) { }
 
     ngOnInit() {
         this.createLoginForm();
@@ -31,15 +33,17 @@ export class LoginComponent implements OnInit {
                 password: this.loginFormGroup.get('password').value
             };
             this.authService.login(loginModel).subscribe(
-                next => {
-                    console.log('Success');
-                    //this.growlMessage = [];
-                    //this.growlMessage.push({ severity: 'success', summary: 'Logged in successfully', detail: '' });
+                next => {                    
+                    this.messageService.add({ key: 'toastKey1', severity: 'success', summary: 'Logged in successfully', detail: '' });
                 },
                 error => {
                     console.log(error);
-                    //this.growlMessage = [];
-                    //this.growlMessage.push({ severity: 'error', summary: error, detail: '' });
+                    if (error.statusText === 'Unknown Error') {
+                        this.messageService.add({ key: 'toastKey1', severity: 'error', summary: 'Something went wrong on server', detail: '' });                        
+                    }
+                    else {
+                        this.messageService.add({ key: 'toastKey1', severity: 'error', summary: 'The email or password is incorrect', detail: '' });
+                    }                    
                 }, () => {
                     this.router.navigate(['/dashboard']);
                 }
