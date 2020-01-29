@@ -15,6 +15,14 @@ const routes: Routes = [
             {
                 path: "dashboard",
                 loadChildren: "./admin/dashboard/dashboard.module#DashboardModule"
+            },
+            {
+                path: "menu",
+                loadChildren: "./admin/menu/menu.module#MenuModule"
+            },
+            {
+                path: "category",
+                loadChildren: "./admin/category/category.module#CategoryModule"
             }
         ]
     },
