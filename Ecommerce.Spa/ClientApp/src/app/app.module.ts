@@ -9,9 +9,8 @@ import { AppComponent } from "./app.component";
 import { HomeComponent } from "./admin/home/home.component";
 import { NotFoundComponent } from "./core/not-found/not-found.component";
 
-
 @NgModule({
-  declarations: [AppComponent, HomeComponent, NotFoundComponent],
+    declarations: [AppComponent, HomeComponent, NotFoundComponent],
   imports: [BrowserModule, CommonModule, RouterModule, AppRoutingModule],
   providers: [],
   bootstrap: [AppComponent]
